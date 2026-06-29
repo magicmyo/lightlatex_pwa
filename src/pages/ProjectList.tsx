@@ -359,7 +359,7 @@ export function ProjectList() {
         {/* Logo */}
         <div style={{ padding: '0 20px 20px', fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
           <img src="/logo.png" alt="" style={{ height: 22, width: 'auto' }} />
-          <span style={{ color: '#1a73e8' }}>Light</span><span>LaTeX</span>
+          <span><span style={{ color: '#1a73e8' }}>Light</span><span>LaTeX</span></span>
         </div>
 
         {/* New Project dropdown */}

@@ -87,7 +87,7 @@ export function Toolbar() {
           style={{ fontWeight: 700, fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
         >
           <img src="/logo.png" alt="" style={{ height: 18, width: 'auto', display: 'block' }} />
-          <span style={{ color: '#1a73e8' }}>Light</span><span style={{ color: '#fff' }}>LaTeX</span>
+          <span><span style={{ color: '#1a73e8' }}>Light</span><span style={{ color: '#fff' }}>LaTeX</span></span>
         </span>
         <span style={{ color: '#888', margin: '0 2px' }}>/</span>
         <span style={{ color: '#ddd', fontWeight: 500 }}>{projectName}</span>
