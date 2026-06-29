@@ -1,0 +1,23 @@
+node_modules/
+dist/
+src/lezer-latex/latex.mjs
+src/lezer-latex/latex.terms.mjs
+src/lezer-bibtex/bibtex.mjs
+src/lezer-bibtex/bibtex.terms.mjs
+*.local
+.gstack/
+
+# Local agent / editor / OS state
+.claude/
+CLAUDE.md
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Env & logs
+.env
+.env.*.local
+npm-debug.log*
+yarn-error.log*

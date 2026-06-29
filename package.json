@@ -1,0 +1,56 @@
+{
+  "name": "lightlatex-offline",
+  "version": "1.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/REPLACE_ME/lightlatex-offline"
+  },
+  "type": "module",
+  "scripts": {
+    "build:grammar": "lezer-generator src/lezer-latex/latex.grammar -o src/lezer-latex/latex.mjs && lezer-generator src/lezer-bibtex/bibtex.grammar -o src/lezer-bibtex/bibtex.mjs",
+    "prebuild": "npm run build:grammar",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "6.18.4",
+    "@codemirror/commands": "6.10.1",
+    "@codemirror/lang-markdown": "6.5.0",
+    "@codemirror/language": "6.12.1",
+    "@codemirror/lint": "6.9.2",
+    "@codemirror/search": "6.5.8",
+    "@codemirror/state": "6.5.4",
+    "@codemirror/view": "6.38.6",
+    "@lezer/common": "1.5.0",
+    "@lezer/highlight": "1.2.3",
+    "@lezer/lr": "1.4.7",
+    "classnames": "2.3.2",
+    "codemirror": "6.0.1",
+    "i18next": "25.2.1",
+    "jszip": "3.10.1",
+    "pdfjs-dist": "5.1.91",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-error-boundary": "4.0.13",
+    "react-i18next": "15.5.2",
+    "react-resizable-panels": "2.1.1"
+  },
+  "devDependencies": {
+    "@lezer/generator": "1.8.0",
+    "@types/lodash": "4.17.13",
+    "@types/react": "18.3.28",
+    "@types/react-dom": "18.3.6",
+    "@vitejs/plugin-react": "4.4.1",
+    "dictionary-en": "^4.0.0",
+    "lodash": "^4.17.21",
+    "playwright": "^1.61.0",
+    "typescript": "5.9.3",
+    "vite": "^8.1.0",
+    "vite-plugin-pwa": "^0.21.1",
+    "workbox-window": "^7.3.0"
+  }
+}

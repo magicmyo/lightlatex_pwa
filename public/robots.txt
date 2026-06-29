@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /test-compile.html
+
+Sitemap: https://REPLACE_ME.example.com/sitemap.xml
