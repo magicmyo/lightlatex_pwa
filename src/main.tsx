@@ -125,9 +125,12 @@ function ProjectListPage() {
 function App() {
   const path = useRoute()
 
-  // Start preloading the engine immediately — shows the download banner even
-  // on the landing page, which reinforces the "one-time download" message.
-  useEffect(() => { preloadEngine() }, [])
+  // Start preloading the engine once the user is in the app (project list or editor),
+  // but NOT on the landing page — first-time visitors shouldn't trigger the large
+  // one-time engine download just by viewing the landing page.
+  // navigateTo() fires popstate, which updates `path`, so this starts immediately
+  // when the user opens the app. preloadEngine() is idempotent.
+  useEffect(() => { if (path !== '/') preloadEngine() }, [path])
 
   // Route: /project/<id> → editor
   const match = path.match(/^\/project\/(\d+)$/)
@@ -149,13 +152,10 @@ function App() {
   }
 
   // Route: / → landing page (for first-time visitors)
+  // No DownloadBanner here: the engine download doesn't start until the user
+  // opens the app, so there's nothing to show on the landing page.
   if (path === '/') {
-    return (
-      <>
-        <DownloadBanner />
-        <Landing />
-      </>
-    )
+    return <Landing />
   }
 
   // Fallback: anything else → project list
