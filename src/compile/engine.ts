@@ -194,7 +194,14 @@ export async function preloadEngine(): Promise<void> {
 // ─── Public compile function ──────────────────────────────────────────────────
 
 const MAX_PASSES = 3
-const RERUN_SIGNAL = 'Rerun to get cross-references right'
+// Signals that indicate another LaTeX pass is needed to resolve references/citations.
+// Each string is checked as a substring of the compile log.
+const RERUN_SIGNALS = [
+  'Rerun to get cross-references right', // LaTeX kernel: unresolved labels/refs
+  'Rerun to get',                        // hyperref outlines, etc.
+  'Please rerun LaTeX',                  // biblatex: .bbl was written, needs another pass
+  'Citation(s) may have changed',        // citation churn between passes
+]
 
 export async function compile(files: CompileFile[], preferredMain?: string): Promise<EngineResult> {
   // Guard: two overlapping compiles would corrupt the engine's shared MemFS state.
@@ -323,7 +330,7 @@ async function _runCompile(
     }
 
     // Stop early if no more passes are needed
-    if (!lastResult.log.includes(RERUN_SIGNAL)) break
+    if (!RERUN_SIGNALS.some(s => lastResult!.log.includes(s))) break
   }
 
   const result = lastResult!
@@ -333,6 +340,19 @@ async function _runCompile(
   // (engine.flushCache() would also wipe .aux — we skip it between passes above)
 
   const { errors, warnings } = parseLatexLog(result.log)
+
+  // If the log tells us biber is needed, surface a clear actionable warning.
+  // The in-browser engine has bibtex but not biber; biblatex defaults to biber.
+  // The user needs to add backend=bibtex to their \usepackage[...]{biblatex} options.
+  if (/run Biber on the file|Please \(re\)run Biber/i.test(result.log)) {
+    warnings.unshift({
+      message:
+        'Bibliography empty — this document uses biblatex with the biber backend, ' +
+        'which the in-browser compiler cannot run. ' +
+        'Add backend=bibtex to your \\usepackage[...]{biblatex} options ' +
+        '(keep \\addbibresource and \\printbibliography unchanged) and recompile.',
+    })
+  }
 
   return {
     status: success ? 'success' : 'error',
