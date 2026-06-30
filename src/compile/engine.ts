@@ -251,6 +251,26 @@ export async function compile(files: CompileFile[], preferredMain?: string): Pro
   }
 }
 
+// SwiftLaTeX ships bibtex but not biber. Rewrite the in-memory copy of any .tex/.sty/.cls
+// so that biblatex always uses backend=bibtex. The user's stored files are never touched.
+function forceBibtexBackend(text: string): string {
+  if (!text.includes('biblatex')) return text
+  // a) explicit biber backend → bibtex (covers \usepackage options and
+  //    \ExecuteBibliographyOptions{backend=biber})
+  let out = text.replace(/backend\s*=\s*biber\b/gi, 'backend=bibtex')
+  // b) biblatex loaded with NO backend option → inject backend=bibtex
+  out = out.replace(
+    /(\\(?:usepackage|RequirePackage))(\[[^\]]*\])?(\{biblatex\})/g,
+    (_m, cmd: string, opts: string | undefined, pkg: string) => {
+      if (opts && /backend\s*=/.test(opts)) return _m // already set
+      return opts
+        ? `${cmd}[backend=bibtex,${opts.slice(1, -1)}]${pkg}` // prepend to existing opts
+        : `${cmd}[backend=bibtex]${pkg}`                       // no opts at all
+    },
+  )
+  return out
+}
+
 async function _runCompile(
   engine: PdfTeXEngineInstance,
   files: CompileFile[],
@@ -290,9 +310,15 @@ async function _runCompile(
     engine.makeMemFSFolder(folder)
   }
 
-  // Write files
+  // Write files, forcing bibtex backend for any biblatex LaTeX source (in-memory only).
+  let didForceBibtex = false
   for (const { path, content } of files) {
-    engine.writeMemFSFile(path, content)
+    let toWrite: string | Uint8Array = content
+    if (typeof content === 'string' && /\.(tex|sty|cls|ltx)$/i.test(path)) {
+      toWrite = forceBibtexBackend(content)
+      if (toWrite !== content) didForceBibtex = true
+    }
+    engine.writeMemFSFile(path, toWrite)
   }
 
   engine.setEngineMainFile(mainFile)
@@ -341,16 +367,22 @@ async function _runCompile(
 
   const { errors, warnings } = parseLatexLog(result.log)
 
-  // If the log tells us biber is needed, surface a clear actionable warning.
-  // The in-browser engine has bibtex but not biber; biblatex defaults to biber.
-  // The user needs to add backend=bibtex to their \usepackage[...]{biblatex} options.
+  // If we rewrote the backend, tell the user so the behaviour is transparent.
+  if (didForceBibtex) {
+    warnings.unshift({
+      message:
+        'biber is unavailable in the browser — your bibliography was compiled with ' +
+        'bibtex instead. Most references render correctly; some advanced biblatex ' +
+        'features (sorting, certain styles) may differ from a full biber build.',
+    })
+  }
+  // Safety net: if biber is still requested after rewriting (e.g. set inside a .bib or
+  // via \ExecuteBibliographyOptions in a .sty we missed), surface a clear warning.
   if (/run Biber on the file|Please \(re\)run Biber/i.test(result.log)) {
     warnings.unshift({
       message:
-        'Bibliography empty — this document uses biblatex with the biber backend, ' +
-        'which the in-browser compiler cannot run. ' +
-        'Add backend=bibtex to your \\usepackage[...]{biblatex} options ' +
-        '(keep \\addbibresource and \\printbibliography unchanged) and recompile.',
+        'Bibliography empty — the biber backend is unavailable in the browser. ' +
+        'Add backend=bibtex to your \\usepackage[...]{biblatex} options and recompile.',
     })
   }
 
