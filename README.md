@@ -37,7 +37,7 @@ This project is licensed under the **GNU Affero General Public License v3.0
 Because this software is made available over a network (AGPL §13), the complete
 **Corresponding Source** is publicly available at:
 
-> **<https://github.com/magicmyo/lightlatex_pwa.git>** ← replace with your repo URL
+> **<https://lightlatex.com/>**
 
 ### Upstream components
 
