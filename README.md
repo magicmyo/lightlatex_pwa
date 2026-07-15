@@ -1,4 +1,4 @@
-# LightLaTeX Offline https://lightlatex.com/
+# LightLaTeX Offline https://lightlatex.com
 
 A fully offline, browser-only LaTeX editor — Overleaf-like UI, works entirely in
 your browser with no server, no install, and no account required.
