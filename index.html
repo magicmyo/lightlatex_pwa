@@ -71,7 +71,16 @@
       base-uri 'none';
       frame-src blob: https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com;
     " />
-
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4R1E0X3T9Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-4R1E0X3T9Q');
+    </script>
+    
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1417620798568294"
             crossorigin="anonymous"></script>
